@@ -1,0 +1,7 @@
+[
+  {"id": "L-1", "date": "2026-04-12", "vendor": "Sri Balaji Traders", "amount": 1180.0, "reference": "SBT-1001"},
+  {"id": "L-2", "date": "2026-04-15", "vendor": "Metro Stationers", "amount": 575.0, "reference": "MS-2201"},
+  {"id": "L-3", "date": "2026-05-02", "vendor": "Deccan Hardware", "amount": 2300.0, "reference": "DH-778"},
+  {"id": "L-4", "date": "2026-05-10", "vendor": "Ravi Electricals", "amount": 4270.0, "reference": "RE-4510"},
+  {"id": "L-5", "date": "2026-02-20", "vendor": "Deccan Hardware", "amount": 708.0, "reference": "DH-700"}
+]

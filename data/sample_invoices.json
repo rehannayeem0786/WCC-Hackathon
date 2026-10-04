@@ -1,0 +1,10 @@
+[
+  {"id": "INV-001", "vendor": "Sri Balaji Traders", "invoice_no": "SBT-1001", "date": "2026-04-12", "taxable_value": 1000.0, "gst_rate": 18.0, "gst_amount": 180.0, "category": "goods"},
+  {"id": "INV-002", "vendor": "Metro Stationers", "invoice_no": "MS-2201", "date": "2026-04-15", "taxable_value": 500.0, "gst_rate": 15.0, "gst_amount": 75.0, "category": "supplies"},
+  {"id": "INV-003", "vendor": "Deccan Hardware", "invoice_no": "DH-778", "date": "2026-05-02", "taxable_value": 2000.0, "gst_rate": 18.0, "gst_amount": 300.0, "category": "goods"},
+  {"id": "INV-004", "vendor": "Sri Balaji Traders", "invoice_no": "SBT-1002", "date": "2026-05-05", "taxable_value": 1500.0, "gst_rate": 18.0, "gst_amount": 270.0, "category": "goods"},
+  {"id": "INV-005", "vendor": "Ravi Electricals", "invoice_no": "RE-4510", "date": "2026-05-10", "taxable_value": 4000.0, "gst_rate": 18.0, "gst_amount": 720.0, "category": "goods"},
+  {"id": "INV-006", "vendor": "Sri Balaji Traders", "invoice_no": "SBT-1001", "date": "2026-04-12", "taxable_value": 1000.0, "gst_rate": 18.0, "gst_amount": 180.0, "category": "goods"},
+  {"id": "INV-007", "vendor": "New Star Packaging", "invoice_no": "NSP-11", "date": "2026-05-18", "taxable_value": 800.0, "gst_rate": 12.0, "gst_amount": 96.0, "category": "supplies"},
+  {"id": "INV-008", "vendor": "Deccan Hardware", "invoice_no": "DH-700", "date": "2026-02-20", "taxable_value": 600.0, "gst_rate": 18.0, "gst_amount": 108.0, "category": "goods"}
+]

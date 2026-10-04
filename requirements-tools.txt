@@ -1,0 +1,5 @@
+# --- Developer tooling (NOT needed to run or deploy the app) ----------------
+# CLI + assistant skill: `graphify` (PyPI package name is `graphifyy`)
+# Used to map this repo into a queryable knowledge graph:
+#   .venv\Scripts\graphify.exe update app
+graphifyy>=0.9.75

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bahi — your ledger, verified</title>
+<style>
+  :root { --bg:#0f1115; --card:#181b22; --ink:#e8eaed; --muted:#9aa0a6;
+          --line:#2a2e37; --accent:#4ade80; --err:#f87171; --warn:#fbbf24; --info:#60a5fa; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; }
+  a { color:var(--accent); }
+  :focus-visible { outline:3px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  .skip { position:absolute; left:-999px; top:0; background:var(--accent); color:#08110a; padding:10px 14px; z-index:9; }
+  .skip:focus { left:8px; top:8px; }
+  .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  header { padding:18px 22px; border-bottom:1px solid var(--line); }
+  h1 { font-size:20px; margin:0 0 6px; } h1 span { color:var(--accent); }
+  .badges { display:flex; gap:8px; flex-wrap:wrap; }
+  .badge { font-size:12px; padding:3px 9px; border:1px solid var(--line); border-radius:999px; color:var(--muted); }
+  main { padding:18px 22px 40px; max-width:1100px; margin:0 auto; }
+  section { margin-bottom:26px; }
+  h2 { font-size:15px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin:0 0 10px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  button, .btn { font:inherit; padding:9px 15px; border-radius:9px; border:1px solid var(--line);
+           background:var(--card); color:var(--ink); cursor:pointer; text-decoration:none; display:inline-block; }
+  button:hover, .btn:hover { border-color:var(--accent); }
+  button.primary { background:var(--accent); color:#08110a; border-color:var(--accent); font-weight:600; }
+  button.danger { border-color:#7f1d1d; color:#fca5a5; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  input[type=file] { color:var(--muted); font-size:13px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:11px; padding:12px 14px; }
+  .card b { display:block; font-size:22px; } .card small { color:var(--muted); }
+  .finding { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--muted);
+             border-radius:10px; padding:13px 15px; margin-bottom:10px; }
+  .finding.error { border-left-color:var(--err); } .finding.warn { border-left-color:var(--warn); }
+  .finding.info { border-left-color:var(--info); }
+  .finding.approved { opacity:.72; } .finding.rejected { opacity:.5; }
+  .ftop { display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap; }
+  .tags { display:flex; gap:6px; flex-wrap:wrap; }
+  .tag { font-size:11px; padding:2px 7px; border-radius:6px; background:#22262e; color:var(--muted); }
+  .why { margin:7px 0 4px; } .fix { color:var(--accent); margin:4px 0 8px; }
+  .evidence { font-family:ui-monospace,Consolas,monospace; font-size:12px; color:var(--muted);
+              background:#12151b; padding:7px 9px; border-radius:7px; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th,td { text-align:left; padding:7px 9px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:500; }
+  .muted { color:var(--muted); } code { background:#22262e; padding:1px 5px; border-radius:5px; }
+  .graphwrap { background:var(--card); border:1px solid var(--line); border-radius:11px; padding:8px; overflow-x:auto; }
+  #explain { background:#12151b; border:1px dashed var(--line); border-radius:9px; padding:11px 13px; margin-top:10px; min-height:56px; }
+  .node { cursor:pointer; } .node:hover text, .node:focus text { fill:#fff; }
+  footer { border-top:1px solid var(--line); padding:16px 22px 30px; color:var(--muted); font-size:13px; }
+  #toast { position:fixed; right:16px; bottom:16px; background:#0b1f17; border:1px solid var(--accent);
+           padding:11px 15px; border-radius:9px; max-width:360px; z-index:20; }
+  #toast[hidden] { display:none; }
+  #toast[data-kind=error] { border-color:var(--err); color:#fecaca; background:#2a1215; }
+
+  /* --- hero + KPIs ------------------------------------------------------ */
+  .hero { display:grid; grid-template-columns:1.35fr 1fr; gap:22px; align-items:center;
+          background:linear-gradient(135deg,#13271d 0%,#12151b 65%); border:1px solid var(--line);
+          border-radius:15px; padding:24px; margin-bottom:22px; }
+  .hero h2 { font-size:clamp(21px,3vw,29px); color:var(--ink); text-transform:none;
+             letter-spacing:normal; margin:7px 0 9px; line-height:1.24; }
+  .eyebrow { font-size:11.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); margin:0; }
+  .lede { margin:0; color:var(--muted); font-size:15.5px; }
+  .kpis { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .kpi { background:#0b0e14; border:1px solid var(--line); border-radius:12px; padding:12px 13px; }
+  .kpi b { display:block; font-size:27px; color:var(--accent); line-height:1.05; font-variant-numeric:tabular-nums; }
+  .kpi.alert b { color:var(--err); }
+  .kpi small { color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; }
+
+  /* --- severity bars ---------------------------------------------------- */
+  .bars { display:flex; flex-direction:column; gap:8px; }
+  .bar { display:grid; grid-template-columns:86px 1fr 34px; gap:10px; align-items:center; font-size:13px; }
+  .bar > i { display:block; height:10px; border-radius:6px; background:var(--accent); min-width:3px; }
+  .bar.error > i { background:var(--err); } .bar.warn > i { background:var(--warn); }
+  .bar.info > i { background:var(--info); }
+  .bar span:last-child { text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+  /* --- approve confirmation (BEFORE / AFTER) ---------------------------- */
+  dialog { background:var(--card); color:var(--ink); border:1px solid var(--line);
+           border-radius:15px; padding:22px 24px; max-width:540px; width:calc(100% - 40px); }
+  dialog::backdrop { background:rgba(0,0,0,.62); }
+  dialog h2 { font-size:17px; color:var(--ink); text-transform:none; letter-spacing:normal; margin:0 0 6px; }
+  .diff { display:grid; grid-template-columns:1fr auto 1fr; gap:12px; align-items:center; margin:16px 0 6px; }
+  .diff > div { background:#0b0e14; border:1px solid var(--line); border-radius:11px; padding:13px 10px; text-align:center; }
+  .diff b { display:block; font-size:21px; font-variant-numeric:tabular-nums; }
+  .diff .before b { color:var(--err); } .diff .after b { color:var(--accent); }
+  .diff small { color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; }
+  .diff .arrow { color:var(--accent); font-size:24px; }
+  .safe { font-size:12.5px; color:var(--muted); margin:12px 0 0; }
+
+  @media (max-width:760px){ .hero{grid-template-columns:1fr;} .kpis{grid-template-columns:repeat(2,1fr);} }
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header>
+  <h1>Bahi <span>— your ledger, verified</span></h1>
+  <div class="badges">
+    <span class="badge">WCC Launchpad 30 · Agentic AI</span>
+    <span class="badge" id="agent">agent: …</span>
+    <span class="badge" id="countBadge">0 open</span>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Problem → Rule → You approve → Clean ledger</p>
+      <h2>Catch every mistake in your books before the tax notice does.</h2>
+      <p class="lede">Bahi checks your bills against your ledger, explains each problem in plain
+      words, and changes nothing until <strong>you</strong> press the button.</p>
+      <p class="row" style="margin:16px 0 0">
+        <button class="primary" id="demoBtn">▶ Run guided demo (60s)</button>
+      </p>
+    </div>
+    <div class="kpis" id="kpis">
+      <div class="kpi"><b>—</b><small>Invoices</small></div>
+      <div class="kpi"><b>—</b><small>Findings</small></div>
+      <div class="kpi alert"><b>—</b><small>Errors</small></div>
+      <div class="kpi"><b>—</b><small>Minutes saved</small></div>
+    </div>
+  </div>
+
+  <section aria-labelledby="h-step1">
+    <h2 id="h-step1">1 · Give Bahi your books</h2>
+    <div class="row">
+      <button class="primary" id="load">Load sample books</button>
+      <label class="btn" for="file">Upload your own CSV
+        <input id="file" type="file" accept=".csv,text/csv" class="sr-only">
+      </label>
+      <a class="btn" href="/api/template.csv">Download template</a>
+      <button id="run">2 · Reconcile</button>
+      <button id="refresh">Refresh</button>
+    </div>
+    <div class="row">
+      <a class="btn" href="/api/export/ledger.csv">Export clean ledger</a>
+      <a class="btn" href="/api/export/findings.csv">Export findings report</a>
+      <button class="danger" id="purge">Delete all my data</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-sum">
+    <h2 id="h-sum">Outcome this run</h2>
+    <div class="cards" id="cards"><p class="muted">Nothing loaded yet.</p></div>
+    <p class="muted" id="trust" style="font-size:13px;margin:9px 0 0">0 automatic writes · every change needs your approval.</p>
+  </section>
+
+  <section aria-labelledby="h-metrics">
+    <h2 id="h-metrics">Rules that fired</h2>
+    <div class="bars" id="bars"><p class="muted">Reconcile to see the distribution.</p></div>
+  </section>
+
+  <section aria-labelledby="h-find">
+    <h2 id="h-find">3 · Findings — you approve every change</h2>
+    <div id="findings"><p class="muted">Load books, then reconcile.</p></div>
+  </section>
+
+  <section aria-labelledby="h-graph">
+    <h2 id="h-graph">Why it fired — the rule graph</h2>
+    <p class="muted" style="margin-top:-4px">Select a rule node to see what it checks and which rules it connects to. Rules that fired are shown filled and labelled with how often.</p>
+    <div class="graphwrap"><svg id="ruleGraph" width="100%" height="230" role="img" aria-label="Interactive graph of bookkeeping rules and their relationships"></svg></div>
+    <div id="explain" role="region" aria-live="polite"><span class="muted">Select a rule to see the reasoning chain.</span></div>
+  </section>
+
+  <section aria-labelledby="h-ledger">
+    <h2 id="h-ledger">Ledger (after approved fixes)</h2>
+    <div id="ledger"></div>
+  </section>
+
+  <section aria-labelledby="h-audit">
+    <h2 id="h-audit">Audit log</h2>
+    <div id="audit"></div>
+  </section>
+
+</main>
+
+<dialog id="confirm" aria-labelledby="confirmTitle" aria-describedby="confirmLead">
+  <h2 id="confirmTitle">Approve this change?</h2>
+  <p id="confirmLead" class="muted" style="margin:4px 0 0">Nothing has been written yet.</p>
+  <div id="confirmBody"></div>
+  <div class="row" style="margin:16px 0 0">
+    <button class="primary" id="confirmYes">Yes, apply it</button>
+    <button id="confirmNo">Cancel</button>
+  </div>
+  <p class="safe">🔒 Reversible — you can undo this from the audit trail at any time.</p>
+</dialog>
+
+<footer>
+  <p><strong>Your data stays yours.</strong> Bahi is local-first: your books never leave this
+     machine unless a wording suggestion is sent to the AI provider — and vendor names are masked
+     before that (<code>BAHI_REDACT_PII=true</code>). Nothing is written to your ledger without your
+     approval, every approval is logged, and <em>Delete all my data</em> wipes it permanently.</p>
+  <p class="muted">Time saved is an estimate at ~4 minutes of manual checking per finding.</p>
+</footer>
+<p id="toast" role="status" aria-live="polite" hidden></p>
+<script src="/app.js" defer></script>
+
